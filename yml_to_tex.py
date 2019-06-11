@@ -1,8 +1,7 @@
 import yaml
 from collections.abc import Iterable
 
-
-def tex_recur(i, tdepth=0):
+def tex_recur(i, e="enumerate", tdepth=0):
     def tabitize(s, tdepth=0):
         return "".join(("\t"*tdepth, s,))# "\n"))
 
@@ -10,13 +9,18 @@ def tex_recur(i, tdepth=0):
         return tabitize(f"\\item {i}", tdepth=tdepth)
     else:
         o = []
-        o.append(tabitize("\\begin{itemize}", tdepth=tdepth))
+        o.append(tabitize(f"\\begin{{{e}}}", tdepth=tdepth))
         for item in i:
-            o.append(tex_recur(item, tdepth=(tdepth+1)))
-        o.append(tabitize("\\end{itemize}", tdepth=tdepth))
+            o.append(tex_recur(item, e, tdepth=(tdepth+1)))
+        o.append(tabitize(f"\\end{{{e}}}", tdepth=tdepth))
         return "\n".join(o)
 
 def yml_to_tex(i):
+    return data_to_tex(
+        yaml.load(i)
+    )
+
+def data_to_tex(i):
     if isinstance(i, dict):
         o = []
         for k, v in i.items():
@@ -46,7 +50,7 @@ if __name__ == "__main__":
 
     for infile in ARGS.infiles:
         i = yaml.load(open(infile).read())
-        latex = yml_to_tex(i)
+        latex = data_to_tex(i)
         if ARGS.stdout:
             print(latex)
         else:
