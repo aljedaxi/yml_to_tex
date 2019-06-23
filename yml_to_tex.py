@@ -20,13 +20,18 @@ def yml_to_tex(i):
         yaml.load(i)
     )
 
-def data_to_tex(i, e="enumerate"):
+def data_to_tex(i, e="enumerate", depth=0):
+    def sectioning(s, depth=0):
+        return f"\\{'sub'*depth}section{{{k}}}"
+
     if isinstance(i, dict):
         o = []
         for k, v in i.items():
-            o.append(f"\\section{{{k}}}")
+            o.append(sectioning(k, depth=depth))
             if isinstance(v, str):
                 o.append(f"\t{v}")
+            elif isinstance(v, dict):
+                o.append(data_to_tex(v, e=e, depth=depth+1))
             elif isinstance(v, Iterable):
                 o.append(tex_recur(v, e=e))
             else:
