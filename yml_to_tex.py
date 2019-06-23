@@ -20,7 +20,7 @@ def yml_to_tex(i):
         yaml.load(i)
     )
 
-def data_to_tex(i):
+def data_to_tex(i, e="enumerate"):
     if isinstance(i, dict):
         o = []
         for k, v in i.items():
@@ -28,12 +28,12 @@ def data_to_tex(i):
             if isinstance(v, str):
                 o.append(f"\t{v}")
             elif isinstance(v, Iterable):
-                o.append(tex_recur(v))
+                o.append(tex_recur(v, e=e))
             else:
                 o.append(f"\t{v}")
         return "\n".join(o)
     if isinstance(i, list):
-        return tex_recur(i)
+        return tex_recur(i, e=e)
     else:
         return i
 
@@ -43,14 +43,24 @@ if __name__ == "__main__":
     parser.add_argument('infiles', metavar='I', type=str, nargs='*',
                         help='yaml infiles to be converted to LaTeX'
                         )
-    parser.add_argument("-o", "--stdout", help="print output to STDOUT", action="store_true")
+    parser.add_argument("-o", "--stdout",  
+                        help="print output to STDOUT", 
+                        action="store_true")
+    parser.add_argument("-i", "--itemize", 
+                        help="put items in itemized list", 
+                        action="store_true")
     ARGS = parser.parse_args()
     #change this if you want to add filter functionality
     assert ARGS.infiles, "you need to supply an input file!"
 
+    if ARGS.itemize:
+        e = "itemize"
+    else:
+        e = "enumerate"
+
     for infile in ARGS.infiles:
         i = yaml.load(open(infile).read())
-        latex = data_to_tex(i)
+        latex = data_to_tex(i, e=e)
         if ARGS.stdout:
             print(latex)
         else:
