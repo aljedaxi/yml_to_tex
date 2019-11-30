@@ -1,5 +1,6 @@
-import yaml
+from ruamel.yaml import YAML
 from collections.abc import Iterable
+yaml = YAML(typ='safe')
 
 def tex_recur(i, e="enumerate", tdepth=0):
     def tabitize(s, tdepth=0):
