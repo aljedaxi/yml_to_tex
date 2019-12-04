@@ -11,6 +11,9 @@ def tex_recur(i, e="enumerate", tdepth=0):
     else:
         o = []
         o.append(tabitize(f"\\begin{{{e}}}", tdepth=tdepth))
+        if i == None:
+            return ''
+
         for item in i:
             o.append(tex_recur(item, e, tdepth=(tdepth+1)))
         o.append(tabitize(f"\\end{{{e}}}", tdepth=tdepth))
